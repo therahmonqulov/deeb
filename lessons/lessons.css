@@ -1,0 +1,17 @@
+@media screen and (min-width: 310px) and (max-width: 770px) {
+    .lessons-language {
+        padding-top: 40px;
+    }
+}
+
+@media screen and (min-width: 770px) and (max-width: 1150px) {
+    .lessons-language {
+        padding-top: 40px;
+    }
+}
+
+@media screen and (min-width: 1150px) and (max-width: 5000px) {
+    .lessons-language {
+        padding-top: 1px;
+    }
+}

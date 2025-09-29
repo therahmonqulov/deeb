@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./auth/auth.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- form -->
+    <section class="form">
+        <!-- register form -->
+        <div class="register-form" id="register-form">
+            <h2>Ro'yxatdan o'tish</h2>
+            <form action="#">
+                <label for="name">Foydalanuvchi nomi:</label>
+                <input type="text" id="name" placeholder="@Polonchiyev" required>
+                <span class="register-name-error"></span>
+
+                <label for="email">E-mail:</label>
+                <input type="email" id="email" placeholder="misol@gmail.com" required>
+                <span class="register-email-error"></span>
+
+                <label for="password">Parol:</label>
+                <input type="password" id="password" placeholder="Parol (kamida 8 ta belgi)" required>
+                <span class="register-password-error"></span>
+
+                <button type="submit">Ro'yxatdan o'tish</button>
+            </form>
+            <div class="register-link">
+                <p>Hisobingiz bormi? <a href="#" id="show-login">Kirish</a></p>
+            </div>
+        </div>
+
+        <!-- login form -->
+        <div class="login-form" id="login-form">
+            <h2>Kirish</h2>
+            <form action="#">
+                <label for="email">Foydalanuvchi nomi yoki E-mail:</label>
+                <input type="email" id="email" placeholder="misol@gmail.com" required>
+                <span class="login-email-error"></span>
+
+                <label for="password">Parol:</label>
+                <input type="password" id="password" placeholder="Parolingiz" required>
+                <span class="login-password-error"></span>
+
+                <button type="submit">Kirish</button>
+            </form>
+            <label for="#" class="forgot-password">Parolni unutdingizmi?</label>
+            <div class="register-link">
+                <p>Hisobingiz yo'qmi? <a href="#" id="show-register">Ro'yxatdan o'tish</a></p>
+            </div>
+        </div>
+    </section>
+
+    <script src="auth.js"></script>
+</body>
+
+</html>
