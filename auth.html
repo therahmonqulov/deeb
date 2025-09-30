@@ -13,55 +13,63 @@
 </head>
 
 <body>
-    <!-- form -->
-    <section class="form">
-        <!-- register form -->
-        <div class="register-form" id="register-form">
-            <h2>Ro'yxatdan o'tish</h2>
-            <form action="#">
-                <label for="name">Foydalanuvchi nomi:</label>
-                <input type="text" id="name" placeholder="@Polonchiyev">
-                <span class="register-name-error"></span>
+    <div class="form-body">
 
-                <label for="email">E-mail:</label>
-                <input class="email" placeholder="misol@gmail.com">
-                <span class="register-email-error"></span>
+        <!-- form -->
+        <section class="form">
+            <!-- register form -->
+            <div class="register-form" id="register-form">
+                <h2>Ro'yxatdan o'tish</h2>
+                <form action="#">
+                    <label for="name">Foydalanuvchi nomi:</label>
+                    <input type="text" id="name" placeholder="@Polonchiyev">
+                    <span class="register-name-error"></span>
 
-                <label for="password">Parol:</label>
-                <input type="password" class="password" placeholder="Parol (kamida 8 ta belgi)">
-                <span class="register-password-error"></span>
+                    <label for="email">E-mail:</label>
+                    <input class="email" placeholder="misol@gmail.com">
+                    <span class="register-email-error"></span>
 
-                <label for="confirm-password">Parolni tasdiqlash:</label>
-                <input type="password" id="confirm-password" placeholder="Parolni tasdiqlang">
-                <span class="register-confirm-password-error"></span>
+                    <label for="password">Parol:</label>
+                    <input type="password" class="password" placeholder="Parol (kamida 8 ta belgi)">
+                    <span class="register-password-error"></span>
 
-                <button type="submit">Ro'yxatdan o'tish</button>
-            </form>
-            <div class="register-link">
-                <p>Hisobingiz bormi? <a href="#" id="show-login">Kirish</a></p>
+                    <label for="confirm-password">Parolni tasdiqlash:</label>
+                    <input type="password" id="confirm-password" placeholder="Parolni tasdiqlang">
+                    <span class="register-confirm-password-error"></span>
+
+                    <button type="submit">Ro'yxatdan o'tish</button>
+                </form>
+                <div class="register-link">
+                    <p>Hisobingiz bormi? <a href="#" id="show-login">Kirish</a></p>
+                </div>
             </div>
-        </div>
 
-        <!-- login form -->
-        <div class="login-form" id="login-form">
-            <h2>Kirish</h2>
-            <form action="#">
-                <label for="email">Foydalanuvchi nomi yoki E-mail:</label>
-                <input id="login-email" class="email" placeholder="misol@gmail.com">
-                <span class="login-email-error"></span>
+            <!-- login form -->
+            <div class="login-form" id="login-form">
+                <h2>Kirish</h2>
+                <form action="#">
+                    <label for="email">Foydalanuvchi nomi yoki E-mail:</label>
+                    <input id="login-email" class="email" placeholder="misol@gmail.com">
+                    <span class="login-email-error"></span>
 
-                <label for="password">Parol:</label>
-                <input id="login-password" type="password" class="password" placeholder="Parolingiz">
-                <span class="login-password-error"></span>
+                    <label for="password">Parol:</label>
+                    <input id="login-password" type="password" class="password" placeholder="Parolingiz">
+                    <span class="login-password-error"></span>
 
-                <button id="login-submit" type="submit">Kirish</button>
-            </form>
-            <label for="#" class="forgot-password">Parolni unutdingizmi?</label>
-            <div class="register-link">
-                <p>Hisobingiz yo'qmi? <a href="#" id="show-register">Ro'yxatdan o'tish</a></p>
+                    <button id="login-submit" type="submit">Kirish</button>
+                </form>
+                <label for="#" class="forgot-password">Parolni unutdingizmi?</label>
+                <div class="register-link">
+                    <p>Hisobingiz yo'qmi? <a href="#" id="show-register">Ro'yxatdan o'tish</a></p>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <!--  -->
+        <section class="form-2">
+            
+        </section>
+    </div>
 
     <script src="./auth/auth.js"></script>
 </body>
