@@ -29,7 +29,7 @@ registerForm.addEventListener("submit", (e) => {
     const registerPasswordErrorSpan = document.querySelector(".register-password-error");
     const emailInput = document.getElementById("email").value;
 
-    if (document.getElementById("name").value === "") {
+    if (document.getElementById("name").value === "" || document.getElementById("name").value.length < 3 || document.getElementById("name").value.length > 17) {
         nameErrorSpan.textContent = "Iltimos, ismingizni kiriting";
     } else {
         nameErrorSpan.textContent = "";
