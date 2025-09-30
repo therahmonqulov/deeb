@@ -17,6 +17,7 @@ showLoginLink.addEventListener("click", (e) => {
     loginForm.style.display = "block";
 });
 
+// Ro'yxatdan o'tish formasini yuborish hodisasi
 registerForm.addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -26,9 +27,13 @@ registerForm.addEventListener("submit", (e) => {
     const emailErrorSpan = document.querySelector(".register-email-error");
     const nameErrorSpan = document.querySelector(".register-name-error");
     const registerPasswordErrorSpan = document.querySelector(".register-password-error");
-    const loginEmailErrorSpan = document.querySelector(".login-email-error");
-    const loginPasswordErrorSpan = document.querySelector(".login-password-error");
     const emailInput = document.getElementById("email").value;
+
+    if (document.getElementById("name").value === "") {
+        nameErrorSpan.textContent = "Iltimos, ismingizni kiriting";
+    } else {
+        nameErrorSpan.textContent = "";
+    }
 
     // parol uzunligini tekshirish
     if (password.length <= 8 || password === "" ) {
