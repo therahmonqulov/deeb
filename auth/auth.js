@@ -61,7 +61,7 @@ registerForm.addEventListener("submit", async (e) => {
         && registerPasswordErrorSpan.textContent === "" 
         && errorSpan.textContent === "") {
         try {
-            const response = await fetch('http://localhost:3000/register', {
+            const response = await fetch('https://deeb-backend-aw81.onrender.com/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, email, password })
@@ -108,7 +108,7 @@ loginForm.addEventListener("submit", async (e) => {
     // Agar validatsiya o'tsa, serverga yubor (email va password ishlat)
     if (loginEmailErrorSpan.textContent === "" && loginPasswordErrorSpan.textContent === "") {
         try {
-            const response = await fetch('http://localhost:3000/login', {
+            const response = await fetch('https://deeb-backend-aw81.onrender.com/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: loginEmail, password: loginPassword })
