@@ -16,7 +16,7 @@ showLoginLink.addEventListener("click", (e) => {
     loginForm.style.display = "block";
 });
 
-// Ro'yxatdan o'tish formasini yuborish hodisasi (mavjud validatsiyadan keyin qo'shing)
+// Ro'yxatdan o'tish formasi
 registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -91,9 +91,7 @@ loginForm.addEventListener("submit", async (e) => {
     // Mavjud validatsiya kodlari (tegmasdan saqlang)
     if (loginEmail === "") {
         loginEmailErrorSpan.textContent = "Foydalanuvchi nomi yoki E-mail kiriting";
-    } else if (!loginEmail.includes("@gmail.com") || loginEmail.length >= 17) {
-        loginEmailErrorSpan.textContent = "To'g'ri foydalanuvchi nomi yoki e-mail kiriting";
-    } else {
+    }else {
         loginEmailErrorSpan.textContent = "";
     }
 
