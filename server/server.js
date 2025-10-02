@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
 });
 const User = mongoose.model('User', userSchema);
 
-// Ro'yxatdan o'tish endpointi (token bilan)
+// Ro'yxatdan o'tish
 app.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
