@@ -32,18 +32,21 @@ app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
     const existingUser = await User.findOne({ $or: [{ name }, { email }] });
     if (existingUser) {
-      return res.status(400).json({ error: 'Foydalanuvchi allaqachon mavjud' });
+      if (existingUser.name === name) {
+        return res.status(400).json({ error: 'name_exists', message: 'Bu foydalanuvchi nomi allaqachon mavjud' });
+      } else if (existingUser.email === email) {
+        return res.status(400).json({ error: 'email_exists', message: 'Bu email allaqachon ro\'yxatdan o\'tgan' });
+      }
     }
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     const newUser = new User({ name, email, password: hashedPassword });
     await newUser.save();
 
-    // Yangi: Token yaratish
     const token = jwt.sign({ name, email }, JWT_SECRET, { expiresIn: '1h' });
     res.status(201).json({ message: 'Ro\'yxatdan o\'tdingiz', token });
   } catch (err) {
-    res.status(500).json({ error: 'Server xatosi' });
+    res.status(500).json({ error: 'server_error', message: 'Server xatosi' });
   }
 });
 
@@ -53,18 +56,17 @@ app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ error: 'Noto\'g\'ri email yoki parol' });
+      return res.status(400).json({ error: 'email_not_found', message: 'Bu email ro\'yxatdan o\'tmagan' });
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ error: 'Noto\'g\'ri email yoki parol' });
+      return res.status(400).json({ error: 'invalid_password', message: 'Noto\'g\'ri parol' });
     }
 
-    // Yangi: Token yaratish
     const token = jwt.sign({ name: user.name, email: user.email }, JWT_SECRET, { expiresIn: '1h' });
     res.json({ message: 'Kirish muvaffaqiyatli', token });
   } catch (err) {
-    res.status(500).json({ error: 'Server xatosi' });
+    res.status(500).json({ error: 'server_error', message: 'Server xatosi' });
   }
 });
 

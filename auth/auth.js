@@ -56,10 +56,7 @@ registerForm.addEventListener("submit", async (e) => {
     }
 
     // Yangi qism: Agar validatsiya o'tsa, serverga yubor
-    if (nameErrorSpan.textContent === "" 
-        && emailErrorSpan.textContent === "" 
-        && registerPasswordErrorSpan.textContent === "" 
-        && errorSpan.textContent === "") {
+    if (nameErrorSpan.textContent === "" && emailErrorSpan.textContent === "" && registerPasswordErrorSpan.textContent === "" && errorSpan.textContent === "") {
         try {
             const response = await fetch('https://deeb-backend-aw81.onrender.com/register', {
                 method: 'POST',
@@ -68,13 +65,20 @@ registerForm.addEventListener("submit", async (e) => {
             });
             const data = await response.json();
             if (response.ok) {
-                localStorage.setItem('token', data.token); // Yangi: Token saqlash
+                localStorage.setItem('token', data.token);
                 window.location.href = 'index.html';
             } else {
-                alert(data.error);
+                // Yangi: Error turiga qarab mos span ga yoz
+                if (data.error === 'name_exists') {
+                    nameErrorSpan.textContent = data.message;
+                } else if (data.error === 'email_exists') {
+                    emailErrorSpan.textContent = data.message;
+                } else if (data.error === 'server_error') {
+                    alert(data.message); // Umumiy xato uchun alert
+                }
             }
         } catch (err) {
-            console.error('Xato:', err);
+            alert('Ulanish xatosi'); // Tarmoq xatosi uchun
         }
     }
 });
@@ -91,7 +95,7 @@ loginForm.addEventListener("submit", async (e) => {
     // Mavjud validatsiya kodlari (tegmasdan saqlang)
     if (loginEmail === "") {
         loginEmailErrorSpan.textContent = "Foydalanuvchi nomi yoki E-mail kiriting";
-    }else {
+    } else {
         loginEmailErrorSpan.textContent = "";
     }
 
@@ -103,9 +107,9 @@ loginForm.addEventListener("submit", async (e) => {
         loginPasswordErrorSpan.textContent = "";
     }
 
-    // Agar validatsiya o'tsa, serverga yubor (email va password ishlat)
+    // Yangilangan qism: Agar validatsiya o'tsa, serverga yubor va error ni span da ko'rsat
     if (loginEmailErrorSpan.textContent === "" && loginPasswordErrorSpan.textContent === "") {
-        try {
+        try {   
             const response = await fetch('https://deeb-backend-aw81.onrender.com/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -113,13 +117,20 @@ loginForm.addEventListener("submit", async (e) => {
             });
             const data = await response.json();
             if (response.ok) {
-                localStorage.setItem('token', data.token); // Yangi: Token saqlash
+                localStorage.setItem('token', data.token);
                 window.location.href = 'index.html';
             } else {
-                alert(data.error);
+                // Yangi: Error turiga qarab mos span ga yoz
+                if (data.error === 'email_not_found') {
+                    loginEmailErrorSpan.textContent = data.message;
+                } else if (data.error === 'invalid_password') {
+                    loginPasswordErrorSpan.textContent = data.message;
+                } else if (data.error === 'server_error') {
+                    alert(data.message); // Umumiy xato uchun alert
+                }
             }
         } catch (err) {
-            console.error('Xato:', err);
+            alert('Ulanish xatosi'); // Tarmoq xatosi uchun
         }
     }
 });
