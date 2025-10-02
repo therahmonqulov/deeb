@@ -1,150 +1,127 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const registerForm = document.querySelector('#register-form form');
-    const loginForm = document.querySelector('#login-form form');
-    const showLogin = document.getElementById('show-login');
-    const showRegister = document.getElementById('show-register');
+const loginForm = document.getElementById("login-form");
+const registerForm = document.getElementById("register-form");
+const showRegisterLink = document.getElementById("show-register");
+const showLoginLink = document.getElementById("show-login");
+const confirmPasswordInput = document.getElementById("confirm-password");
 
-    // Formlar o'rtasida o'tish
-    showLogin.addEventListener('click', function (e) {
-        e.preventDefault();
-        document.getElementById('register-form').style.display = 'none';
-        document.getElementById('login-form').style.display = 'block';
-    });
+showRegisterLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    loginForm.style.display = "none";
+    registerForm.style.display = "block";
+});
 
-    showRegister.addEventListener('click', function (e) {
-        e.preventDefault();
-        document.getElementById('login-form').style.display = 'none';
-        document.getElementById('register-form').style.display = 'block';
-    });
+showLoginLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    registerForm.style.display = "none";
+    loginForm.style.display = "block";
+});
 
-    // Ro'yxatdan o'tish formasi
-    registerForm.addEventListener('submit', async function (e) {
-        e.preventDefault();
-        clearRegisterErrors(); // Oldingi xatolarni tozalash
+// Ro'yxatdan o'tish formasini yuborish hodisasi (mavjud validatsiyadan keyin qo'shing)
+registerForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-        const name = document.getElementById('name').value.trim();
-        const email = registerForm.querySelector('.email').value.trim();
-        const password = registerForm.querySelector('.password').value;
-        const confirmPassword = document.getElementById('confirm-password').value;
+    const name = document.getElementById("name").value;
+    const email = document.querySelector(".email").value; // register email
+    const password = document.querySelector(".password").value;
+    const confirmPassword = confirmPasswordInput.value;
 
-        let hasError = false;
+    const errorSpan = document.querySelector(".register-confirm-password-error");
+    const emailErrorSpan = document.querySelector(".register-email-error");
+    const nameErrorSpan = document.querySelector(".register-name-error");
+    const registerPasswordErrorSpan = document.querySelector(".register-password-error");
 
-        // Client tomonida validatsiya
-        if (!name) {
-            document.querySelector('.register-name-error').textContent = 'Foydalanuvchi nomi kiritilishi shart!';
-            hasError = true;
-        }
-        if (!email || !/\S+@\S+\.\S+/.test(email)) {
-            document.querySelector('.register-email-error').textContent = 'To\'g\'ri email kiriting!';
-            hasError = true;
-        }
-        if (password.length < 8) {
-            document.querySelector('.register-password-error').textContent = 'Parol kamida 8 ta belgi bo\'lishi kerak!';
-            hasError = true;
-        }
-        if (password !== confirmPassword) {
-            document.querySelector('.register-confirm-password-error').textContent = 'Parollar mos kelmaydi!';
-            hasError = true;
-        }
+    // Mavjud validatsiya kodlari (tegmasdan saqlang)
+    if (document.getElementById("name").value === "") {
+        nameErrorSpan.textContent = "Iltimos, ismingizni kiriting";
+    } else if (document.getElementById("name").value.length <= 3 || document.getElementById("name").value.length >= 17) {
+        nameErrorSpan.textContent = "Ism 3 dan 17 gacha bo'lgan belgidan iborat bo'lishi kerak";
+    } else {
+        nameErrorSpan.textContent = "";
+    }
 
-        if (hasError) return;
+    if (password.length <= 8 || password === "") {
+        registerPasswordErrorSpan.textContent = "Parol kamida 8 ta belgidan iborat bo'lishi kerak";
+    }
 
+    if (!email.includes("@gmail.com")) {
+        emailErrorSpan.textContent = "Iltimos, Gmail manzilini kiriting";
+    } else {
+        emailErrorSpan.textContent = "";
+    }
+
+    if (confirmPassword !== password || confirmPassword === "") {
+        errorSpan.textContent = "Parollar mos kelmayapti";
+    } else {
+        errorSpan.textContent = "";
+    }
+
+    // Yangi qism: Agar validatsiya o'tsa, serverga yubor
+    if (nameErrorSpan.textContent === "" 
+        && emailErrorSpan.textContent === "" 
+        && registerPasswordErrorSpan.textContent === "" 
+        && errorSpan.textContent === "") {
         try {
-            const response = await fetch('/register', {
+            const response = await fetch('https://deeb-backend-aw81.onrender.com/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, email, password })
             });
-
             const data = await response.json();
-
             if (response.ok) {
-                // Muvaffaqiyatli ro'yxatdan o'tish
-                alert('Ro\'yxatdan o\'tdingiz! Endi kirishingiz mumkin.'); // Bu yerda alert saqlanadi, chunki muvaffaqiyat
-                document.getElementById('register-form').style.display = 'none';
-                document.getElementById('login-form').style.display = 'block';
+                localStorage.setItem('token', data.token); // Yangi: Token saqlash
+                window.location.href = 'index.html';
             } else {
-                // Server xatolari: nom yoki email mavjudligini tekshirish
-                if (data.error.includes('Foydalanuvchi allaqachon mavjud')) {
-                    // Qaysi maydon xato ekanligini aniqlash uchun qo'shimcha tekshirish
-                    const checkName = await fetch('/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email: 'test@test.com', password: 'test' }) });
-                    const nameData = await checkName.json();
-                    if (nameData.error && nameData.error.includes(name)) {
-                        document.querySelector('.register-name-error').textContent = 'Bu foydalanuvchi nomi allaqachon band!';
-                    }
-                    const checkEmail = await fetch('/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'test', email, password: 'test' }) });
-                    const emailData = await checkEmail.json();
-                    if (emailData.error && emailData.error.includes(email)) {
-                        document.querySelector('.register-email-error').textContent = 'Bu email allaqachon ro\'yxatdan o\'tgan!';
-                    }
-                } else {
-                    document.querySelector('.register-password-error').textContent = data.error; // Umumiy xato
-                }
+                alert(data.error);
             }
         } catch (err) {
-            document.querySelector('.register-password-error').textContent = 'Server bilan bog\'lanishda xato!';
+            console.error('Xato:', err);
         }
-    });
+    }
+});
 
-    // Kirish formasi
-    loginForm.addEventListener('submit', async function (e) {
-        e.preventDefault();
-        clearLoginErrors(); // Oldingi xatolarni tozalash
+// Kirish formasini yuborish hodisasi (mavjud validatsiyadan keyin qo'shing)
+loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-        const loginEmail = document.getElementById('login-email').value.trim();
-        const loginPassword = document.getElementById('login-password').value;
+    const loginEmail = document.getElementById("login-email").value;
+    const loginPassword = document.getElementById("login-password").value;
+    const loginEmailErrorSpan = document.querySelector(".login-email-error");
+    const loginPasswordErrorSpan = document.querySelector(".login-password-error");
 
-        let hasError = false;
+    // Mavjud validatsiya kodlari (tegmasdan saqlang)
+    if (loginEmail === "") {
+        loginEmailErrorSpan.textContent = "Foydalanuvchi nomi yoki E-mail kiriting";
+    } else if (!loginEmail.includes("@gmail.com") || loginEmail.length >= 17) {
+        loginEmailErrorSpan.textContent = "To'g'ri foydalanuvchi nomi yoki e-mail kiriting";
+    } else {
+        loginEmailErrorSpan.textContent = "";
+    }
 
-        if (!loginEmail || !/\S+@\S+\.\S+/.test(loginEmail)) {
-            document.querySelector('.login-email-error').textContent = 'To\'g\'ri email kiriting!';
-            hasError = true;
-        }
-        if (!loginPassword) {
-            document.querySelector('.login-password-error').textContent = 'Parol kiritilishi shart!';
-            hasError = true;
-        }
+    if (loginPassword === "") {
+        loginPasswordErrorSpan.textContent = "Iltimos, parol kiriting";
+    } else if (loginPassword.length < 8) {
+        loginPasswordErrorSpan.textContent = "Parol kamida 8 ta belgidan iborat bo'lishi kerak";
+    } else {
+        loginPasswordErrorSpan.textContent = "";
+    }
 
-        if (hasError) return;
-
+    // Agar validatsiya o'tsa, serverga yubor (email va password ishlat)
+    if (loginEmailErrorSpan.textContent === "" && loginPasswordErrorSpan.textContent === "") {
         try {
-            const response = await fetch('/login', {
+            const response = await fetch('https://deeb-backend-aw81.onrender.com/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: loginEmail, password: loginPassword })
             });
-
             const data = await response.json();
-
             if (response.ok) {
-                // Muvaffaqiyatli kirish
-                alert('Kirish muvaffaqiyatli!'); // Bu yerda alert saqlanadi, chunki muvaffaqiyat
-                localStorage.setItem('token', data.token); // Token saqlash
-                // Bu yerda redirect yoki boshqa harakat
+                localStorage.setItem('token', data.token); // Yangi: Token saqlash
+                window.location.href = 'index.html';
             } else {
-                // Login xatolari
-                if (data.error.includes('Noto\'g\'ri email yoki parol')) {
-                    document.querySelector('.login-email-error').textContent = 'Noto\'g\'ri email!';
-                    document.querySelector('.login-password-error').textContent = 'Noto\'g\'ri parol!';
-                } else {
-                    document.querySelector('.login-password-error').textContent = data.error;
-                }
+                alert(data.error);
             }
         } catch (err) {
-            document.querySelector('.login-password-error').textContent = 'Server bilan bog\'lanishda xato!';
+            console.error('Xato:', err);
         }
-    });
-
-    // Xato span'larini tozalash funksiyalari
-    function clearRegisterErrors() {
-        document.querySelector('.register-name-error').textContent = '';
-        document.querySelector('.register-email-error').textContent = '';
-        document.querySelector('.register-password-error').textContent = '';
-        document.querySelector('.register-confirm-password-error').textContent = '';
-    }
-
-    function clearLoginErrors() {
-        document.querySelector('.login-email-error').textContent = '';
-        document.querySelector('.login-password-error').textContent = '';
     }
 });
