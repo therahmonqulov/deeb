@@ -44,16 +44,19 @@ registerForm.addEventListener("submit", async (e) => {
         nameErrorSpan.textContent = "";
     }
 
+    // Parol validatsiyasi
     if (password.length <= 8 || password === "") {
         registerPasswordErrorSpan.textContent = "Parol kamida 8 ta belgidan iborat bo'lishi kerak";
     }
 
+    // Email validatsiyasi
     if (!email.includes("@gmail.com")) {
         emailErrorSpan.textContent = "Iltimos, Gmail manzilini kiriting";
     } else {
         emailErrorSpan.textContent = "";
     }
 
+    // Yangi: Tasdiqlash paroli validatsiyasi
     if (confirmPassword !== password || confirmPassword === "") {
         errorSpan.textContent = "Parollar mos kelmayapti";
     } else {
