@@ -1129,6 +1129,7 @@
     }
 
     .user {
+        cursor: pointer;
         background-color: #ebe3e3;
         border-radius: 10px;
         padding: 8px 10px;
