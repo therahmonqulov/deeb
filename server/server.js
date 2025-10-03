@@ -62,7 +62,7 @@ app.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'invalid_password', message: 'Noto\'g\'ri parol' });
     }
 
-    const token = jwt.sign({ name: user.name, email: user.email }, prosses.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ name: user.name, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.json({ message: 'Kirish muvaffaqiyatli', token });
   } catch (err) {
     res.status(500).json({ error: 'server_error', message: 'Server xatosi' });
