@@ -8,6 +8,7 @@ require('dotenv').config();
 
 const app = express();
 const PORT = 3000;
+const JWT_SECRET = 'sizingizning_maxfiy_kalitingiz_o_zgartiring'; // Yangi: Secret kalit (xavfsiz qiling!)
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -42,7 +43,7 @@ app.post('/register', async (req, res) => {
     const newUser = new User({ name, email, password: hashedPassword });
     await newUser.save();
 
-    const token = jwt.sign({ name, email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ name, email }, JWT_SECRET, { expiresIn: '1h' });
     res.status(201).json({ message: 'Ro\'yxatdan o\'tdingiz', token });
   } catch (err) {
     res.status(500).json({ error: 'server_error', message: 'Server xatosi' });
@@ -62,7 +63,7 @@ app.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'invalid_password', message: 'Noto\'g\'ri parol' });
     }
 
-    const token = jwt.sign({ name: user.name, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ name: user.name, email: user.email }, JWT_SECRET, { expiresIn: '1h' });
     res.json({ message: 'Kirish muvaffaqiyatli', token });
   } catch (err) {
     res.status(500).json({ error: 'server_error', message: 'Server xatosi' });
@@ -73,7 +74,7 @@ app.post('/login', async (req, res) => {
 app.post('/verify', (req, res) => {
   const { token } = req.body;
   try {
-    const decoded = jwt.verify(token, prosses.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
     res.json({ valid: true, user: decoded });
   } catch (err) {
     res.status(401).json({ valid: false, error: 'Noto\'g\'ri yoki muddati tugagan token' });
