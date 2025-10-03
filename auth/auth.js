@@ -31,7 +31,7 @@ registerForm.addEventListener("submit", async (e) => {
     const registerPasswordErrorSpan = document.querySelector(".register-password-error");
 
     // Mavjud validatsiya kodlari (tegmasdan saqlang)
-    if (document.getElementById("name").value === "") {
+    if (document.getElementById("name").value === "" || !document.getElementById("name").value.includes("@")) {
         nameErrorSpan.textContent = "Iltimos, ismingizni kiriting";
     } else if (document.getElementById("name").value.length <= 3 || document.getElementById("name").value.length >= 17) {
         nameErrorSpan.textContent = "Ism 3 dan 17 gacha bo'lgan belgidan iborat bo'lishi kerak";
