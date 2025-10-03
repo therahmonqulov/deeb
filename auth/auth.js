@@ -31,10 +31,15 @@ registerForm.addEventListener("submit", async (e) => {
     const registerPasswordErrorSpan = document.querySelector(".register-password-error");
 
     // Mavjud validatsiya kodlari (tegmasdan saqlang)
-    if (document.getElementById("name").value === "" || !document.getElementById("name").value.includes("@")) {
+    const nameValue = document.getElementById("name").value.trim();
+    if (nameValue === "") {
         nameErrorSpan.textContent = "Iltimos, ismingizni kiriting";
-    } else if (document.getElementById("name").value.length <= 3 || document.getElementById("name").value.length >= 17) {
-        nameErrorSpan.textContent = "Ism 3 dan 17 gacha bo'lgan belgidan iborat bo'lishi kerak";
+    } else if (!nameValue.startsWith("@")) {
+        nameErrorSpan.textContent = "Ism @ belgisi bilan boshlanishi kerak";
+    } else if (nameValue.length <= 4) {
+        nameErrorSpan.textContent = "Ism @ dan keyin kamida 4 ta belgi bo'lishi kerak";
+    } else if (nameValue.length >= 16) {
+        nameErrorSpan.textContent = "Ism @ bilan birga jami 16 ta belgidan oshmasligi kerak";
     } else {
         nameErrorSpan.textContent = "";
     }
@@ -109,7 +114,7 @@ loginForm.addEventListener("submit", async (e) => {
 
     // Yangilangan qism: Agar validatsiya o'tsa, serverga yubor va error ni span da ko'rsat
     if (loginEmailErrorSpan.textContent === "" && loginPasswordErrorSpan.textContent === "") {
-        try {   
+        try {
             const response = await fetch('https://deeb-backend-aw81.onrender.com/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
