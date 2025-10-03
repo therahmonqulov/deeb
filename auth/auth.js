@@ -104,7 +104,7 @@ loginForm.addEventListener("submit", async (e) => {
 
     // Mavjud validatsiya kodlari (tegmasdan saqlang)
     if (loginEmail === "") {
-        loginEmailErrorSpan.textContent = "Foydalanuvchi nomi yoki E-mail kiriting";
+        loginEmailErrorSpan.textContent = "Foydalanuvchi E-mail kiriting";
     } else {
         loginEmailErrorSpan.textContent = "";
     }
