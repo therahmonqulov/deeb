@@ -93,7 +93,7 @@ registerForm.addEventListener("submit", async (e) => {
     }
 });
 
-// Kirish formasini yuborish hodisasi (mavjud validatsiyadan keyin qo'shing)
+// login formasini yuborish hodisasi (mavjud validatsiyadan keyin qo'shing)
 loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
