@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => { center.animate([{ opacity: 0, transform: 'scale(.96)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 520, fill: 'forwards', easing: 'cubic-bezier(.2,.9,.2,1)' }); }, 300);
 });
 
+// asosiy elementlar
 const loginForm = document.getElementById("login-form");
 const registerForm = document.getElementById("register-form");
 const showRegisterLink = document.getElementById("show-register");
