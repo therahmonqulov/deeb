@@ -1,3 +1,16 @@
+// entrance tweens for a polished feel
+document.addEventListener('DOMContentLoaded', () => {
+    const nodes = document.querySelectorAll('.node');
+    nodes.forEach((n, i) => {
+        n.style.opacity = 0; n.style.transform += ' translateY(8px)';
+        setTimeout(() => { n.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 420, easing: 'cubic-bezier(.2,.9,.2,1)', fill: 'forwards' }); }, 80 * i + 120);
+    });
+
+    const center = document.querySelector('.center');
+    center.style.opacity = 0; center.style.transform = 'scale(.96)';
+    setTimeout(() => { center.animate([{ opacity: 0, transform: 'scale(.96)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 520, fill: 'forwards', easing: 'cubic-bezier(.2,.9,.2,1)' }); }, 300);
+});
+
 const loginForm = document.getElementById("login-form");
 const registerForm = document.getElementById("register-form");
 const showRegisterLink = document.getElementById("show-register");
