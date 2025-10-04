@@ -109,6 +109,7 @@
     }
 }
 
+/* desktop */
 @media screen and (min-width: 1150px) and (max-width: 5000px) {
     .form-body {
         display: flex;
