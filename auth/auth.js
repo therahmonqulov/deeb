@@ -3,6 +3,8 @@ const registerForm = document.getElementById("register-form");
 const showRegisterLink = document.getElementById("show-register");
 const showLoginLink = document.getElementById("show-login");
 const confirmPasswordInput = document.getElementById("confirm-password");
+const registerSubmitBtn = document.getElementById("register-submit");
+const loginSubmitBtn = document.getElementById("login-submit");
 
 showRegisterLink.addEventListener("click", (e) => {
     e.preventDefault();
@@ -19,6 +21,10 @@ showLoginLink.addEventListener("click", (e) => {
 // Ro'yxatdan o'tish formasi
 registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    // Loading holatini yoqish
+    registerSubmitBtn.disabled = true;
+    registerSubmitBtn.classList.add('loading');
 
     const name = document.getElementById("name").value;
     const email = document.querySelector(".email").value; // register email
@@ -91,11 +97,19 @@ registerForm.addEventListener("submit", async (e) => {
             alert('Ulanish xatosi'); // Tarmoq xatosi uchun
         }
     }
+
+    // Har doim loading ni o'chirish
+    registerSubmitBtn.disabled = false;
+    registerSubmitBtn.classList.remove('loading');
 });
 
 // login formasini yuborish hodisasi (mavjud validatsiyadan keyin qo'shing)
 loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    // Loading holatini yoqish
+    loginSubmitBtn.disabled = true;
+    loginSubmitBtn.classList.add('loading');
 
     const loginEmail = document.getElementById("login-email").value;
     const loginPassword = document.getElementById("login-password").value;
@@ -143,4 +157,8 @@ loginForm.addEventListener("submit", async (e) => {
             alert('Ulanish xatosi'); // Tarmoq xatosi uchun
         }
     }
+
+    // Har doim loading ni o'chirish
+    loginSubmitBtn.disabled = false;
+    loginSubmitBtn.classList.remove('loading');
 });
