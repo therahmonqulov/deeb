@@ -46,6 +46,8 @@ registerForm.addEventListener("submit", async (e) => {
         nameErrorSpan.textContent = "Ism @ dan keyin kamida 4 ta belgi bo'lishi kerak";
     } else if (nameValue.length >= 16) {
         nameErrorSpan.textContent = "Ism @ bilan birga jami 16 ta belgidan oshmasligi kerak";
+    } else if (!/^@[A-Za-z]+$/.test(nameValue)) {
+        nameErrorSpan.textContent = "Ism faqqat lotin harflaridan iborat bo'lishi kerak";
     } else {
         nameErrorSpan.textContent = "";
     }
