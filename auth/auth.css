@@ -5,12 +5,7 @@
     font-family: "Zalando Sans SemiExpanded", sans-serif;
 }
 
-.register-confirm-password-error,
-.register-email-error,
-.register-name-error,
-.login-email-error,
-.login-password-error,
-.register-password-error {
+.form span {
     color: red;
     font-size: 14px;
 }
