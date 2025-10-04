@@ -36,7 +36,7 @@ registerForm.addEventListener("submit", async (e) => {
     const nameErrorSpan = document.querySelector(".register-name-error");
     const registerPasswordErrorSpan = document.querySelector(".register-password-error");
 
-    // Mavjud validatsiya kodlari (tegmasdan saqlang)
+    // ism validatsiya kodlari 
     const nameValue = document.getElementById("name").value.trim();
     if (nameValue === "") {
         nameErrorSpan.textContent = "Iltimos, ismingizni kiriting";
@@ -53,8 +53,8 @@ registerForm.addEventListener("submit", async (e) => {
     }
 
     // Email validatsiyasi
-    if (!email.includes("@gmail.com")) {
-        emailErrorSpan.textContent = "Iltimos, Gmail manzilini kiriting";
+    if (!email.endsWith("@gmail.com") || email === "") {
+        emailErrorSpan.textContent = "Iltimos, faqat Gmail manzilini kiriting";
     } else {
         emailErrorSpan.textContent = "";
     }
