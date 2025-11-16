@@ -58,7 +58,7 @@ h1 {
 
 /* subtle header inside chat box using pseudo-element (no HTML change) */
 .chat-box::before {
-    content: "Gemini AI Chat";
+    content: "Chatbox:";
     display: block;
     padding: 18px 20px;
     background: #e6dfdfd6;
