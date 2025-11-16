@@ -6,6 +6,18 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken'); // Yangi: JWT import
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const axios = require('axios'); // npm install axios qiling
+
+// Proxy endpoint: /api/proxy-config
+app.get('/api/proxy-config', async (req, res) => {
+  try {
+    const response = await axios.get('https://cdn.digitalcaramel.com/configs/deeb.uz.json');
+    res.json(response.data); // JSON ni qaytaring
+  } catch (error) {
+    console.error('Proxy xatosi:', error.message);
+    res.status(404).json({ error: 'Fayl topilmadi' });
+  }
+});
 
 const app = express();
 const PORT = 3000;
@@ -89,14 +101,14 @@ const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' }); // Tez va
 
 // API endpoint: /generate (ai.js tomonidan chaqiriladi)
 app.post('/generate', async (req, res) => {
-    const { prompt } = req.body;
+  const { prompt } = req.body;
 
-    if (!prompt) {
-        return res.status(400).json({ error: 'Prompt bo\'sh emas' });
-    }
+  if (!prompt) {
+    return res.status(400).json({ error: 'Prompt bo\'sh emas' });
+  }
 
-    try {
-        const fullPrompt = (userMessage) => `
+  try {
+    const fullPrompt = (userMessage) => `
             Siz til o‘rganish bo‘yicha yuqori malakali va do‘stona ustozsiz.
             Sizning yagona vazifangiz — foydalanuvchiga chet tillarini (ayniqsa ingliz tilini) tushunishga, tarjima qilishga, grammatikani o‘rganishga va mashq qilishga yordam berishdir.
 
@@ -112,18 +124,18 @@ app.post('/generate', async (req, res) => {
             "${userMessage}"
             `;
 
-        const result = await model.generateContent(fullPrompt(prompt));
-        const response = await result.response;
-        const text = response.text();
+    const result = await model.generateContent(fullPrompt(prompt));
+    const response = await result.response;
+    const text = response.text();
 
-        res.json({ response: text });
-    } catch (error) {
-        console.error('Gemini xatosi:', error);
-        res.status(500).json({ error: 'AI javob berolmadi. API key ni tekshiring.' });
-    }
+    res.json({ response: text });
+  } catch (error) {
+    console.error('Gemini xatosi:', error);
+    res.status(500).json({ error: 'AI javob berolmadi. API key ni tekshiring.' });
+  }
 });
 
 // Server ishga tushirish
 app.listen(PORT, () => {
-    console.log(`Server http://localhost:${PORT} da ishlamoqda`);
+  console.log(`Server http://localhost:${PORT} da ishlamoqda`);
 });
