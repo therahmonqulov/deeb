@@ -86,7 +86,7 @@ app.post('/verify', (req, res) => {
 
 // === AI INTEGRATSIYASI (Gemini) ===
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY); // .env dan API key
-const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' }); // Tez va samarali model
+const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' }); // Tez va samarali model
 
 // API endpoint: /generate (ai.js tomonidan chaqiriladi)
 app.post('/generate', async (req, res) => {
