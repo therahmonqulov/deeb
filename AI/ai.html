@@ -4,7 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- fonts -->
+
+    <script>window.yaContextCb = window.yaContextCb || [] </script>
+    <script async src="https://yandex.ru/ads/system/context.js"></script>
+    <script async src="https://cdn.digitalcaramel.com/caramel.js"></script>
+
+    <!-- main -->
+    <title>deeb.uz — Online tillarni o‘rganish platformasi</title>
+    <meta name="description"
+        content="deeb.uz orqali ingliz, rus va arab tillarini interaktiv darslar yordamida tez va samarali o‘rganing. Bugunoq boshlang!">
+    <meta name="keywords" content="til o‘rganish, ingliz tili, rus tili, arab tili, online platforma, kurslar">
+
+    <!-- google meta -->
+    <meta name="google-site-verification" content="Kwq71f1vOHHSG2Kz7Tq3hkrElG7qg-NeQww4cfdMK6k" />
+
+    <!-- links -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -13,8 +27,7 @@
         rel="stylesheet">
 
     <link rel="stylesheet" href="../client/style.css">
-    <link rel="stylesheet" href="./lessons.css">
-    <title>deeb.uz - Oson organing</title>
+    <link rel="stylesheet" href="./ai.css">
 </head>
 
 <body>
@@ -25,11 +38,21 @@
         </div>
         <div class="menu-links">
             <ul>
-                <a href="../index.html"><li><i class="fa-solid fa-house"></i> <span>Bosh sahifa</span></li></a>
-                <a href="#"><li class="crl"><i class="fa-solid fa-calendar-check"></i> <span>Darslar</span></li></a>
-                <a href="../AI/ai.html"><li><i class="fa-solid fa-robot"></i> <span>AI</span></li></a>
-                <a href="../quiz/quiz.html"><li><i class="fa-solid fa-file-word"></i> <span>Test</span></li></a>
-                <a href="#"><li><i class="fa-solid fa-user"></i> <span>Profil</span></li></a>
+                <a href="../index.html">
+                    <li><i class="fa-solid fa-house"></i> <span>Bosh sahifa</span></li>
+                </a>
+                <a href="../lessons/lessons.html">
+                    <li><i class="fa-solid fa-calendar-check"></i> <span>Darslar</span></li>
+                </a>
+                <a href="./ai.html">
+                    <li class="crl"><i class="fa-solid fa-robot"></i> <span>AI</span></li>
+                </a>
+                <a href="../quiz/quiz.html">
+                    <li><i class="fa-solid fa-file-word"></i> <span>Test</span></li>
+                </a>
+                <a href="#">
+                    <li><i class="fa-solid fa-user"></i> <span>Profil</span></li>
+                </a>
             </ul>
             <div class="menu-setting">
                 <span><i class="fa-solid fa-gear"></i> Sozlamlar</span>
@@ -41,41 +64,26 @@
 
         <!-- header -->
         <header>
-            <h2>Darslar:</h2>
+            <h2>AI:</h2>
             <div class="user">
-                <img src="../media/male-user.png" alt="">
-                <span>Polonchiyev</span>
+                <!-- <img src="./media/male-user.png" alt=""> -->
+                <span>Foydalanuvchi</span>
             </div>
         </header>
 
         <div class="main">
+            <div class="container">
 
-            <!-- language section -->
-            <section class="lessons-language">
-                <div class="language-section">
-                    <div class="language-section-text">
-                        <!-- <h2>Qaysi tillarni o'rganmoqchisiz:</h2> -->
-                    </div>
-                    <div class="language-section-boxes">
-                        <div class="language-section-boxes-box">
-                            <img src="../media/angliya.png" alt="">
-                            <span>Ingliz tili</span>
-                        </div>
-                        <div class="language-section-boxes-box">
-                            <img src="../media/ruscha.png" alt="">
-                            <span>Rus tili</span>
-                        </div>
-                        <div class="language-section-boxes-box">
-                            <img src="../media/arab.png" alt="">
-                            <span>Arab tili</span>
-                        </div>
-                        <div class="language-section-boxes-box">
-                            <img src="../media/germaniya.png" alt="">
-                            <span>Nemis tili</span>
-                        </div>
+                <div class="chat-box">
+                    <div id="chat-history" class="chat-history"></div>
+                    <div class="input-group">
+                        <input type="text" id="user-input" placeholder="Masalan: 'Hello' deb yozing..."
+                            maxlength="500">
+                        <button id="send-btn">Yuborish</button>
                     </div>
                 </div>
-            </section>
+            </div>
+
 
             <!-- footer section -->
             <section class="footer">
@@ -111,6 +119,7 @@
     </section>
 
     <script src="../client/index.js"></script>
+    <script src="./ai.js"></script>
 </body>
 
 </html>

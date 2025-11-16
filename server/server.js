@@ -1,17 +1,19 @@
+require('dotenv').config(); // .env ni yuklash
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken'); // Yangi: JWT import
-require('dotenv').config();
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
 const PORT = 3000;
 const JWT_SECRET = 'sizingizning_maxfiy_kalitingiz_o_zgartiring'; // Yangi: Secret kalit (xavfsiz qiling!)
 
-app.use(cors());
-app.use(bodyParser.json());
+// Middleware
+app.use(cors()); // Front-end dan so'rovlarga ruxsat
+app.use(bodyParser.json()); // JSON body ni parse qilish
 
 // MongoDB ulanish
 mongoose.connect(process.env.MONGODB_URI)
@@ -81,4 +83,47 @@ app.post('/verify', (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`Server ${PORT}-portda ishlamoqda`));
+// === AI INTEGRATSIYASI (Gemini) ===
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY); // .env dan API key
+const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' }); // Tez va samarali model
+
+// API endpoint: /generate (ai.js tomonidan chaqiriladi)
+app.post('/generate', async (req, res) => {
+    const { prompt } = req.body;
+
+    if (!prompt) {
+        return res.status(400).json({ error: 'Prompt bo\'sh emas' });
+    }
+
+    try {
+        const fullPrompt = (userMessage) => `
+            Siz til o‘rganish bo‘yicha yuqori malakali va do‘stona ustozsiz.
+            Sizning yagona vazifangiz — foydalanuvchiga chet tillarini (ayniqsa ingliz tilini) tushunishga, tarjima qilishga, grammatikani o‘rganishga va mashq qilishga yordam berishdir.
+
+            Qoidalar:
+            - Javoblaringiz har doim aniq, qisqa, tushunarli va o‘quvchi darajasiga mos bo‘lsin.
+            - Grammatikani tushuntirayotganda soddalashtirilgan izohlar va misollar bering.
+            - Tarjimalar va tushuntirishlar O‘zbek tilida bo‘lsin, lekin kerakli joyda original til (masalan, inglizcha) matnni ham ko‘rsating.
+            - Agar foydalanuvchi sizdan til o‘rganishdan tashqari boshqa mavzuda (masalan, siyosat, texnologiya, shaxsiy maslahatlar, kod yozish va hokazo) yordam so‘rasa, muloyimlik bilan rad eting va shunday javob bering:
+            "Kechirasiz 😊 Men faqat til o‘rganish bo‘yicha yordam bera olaman. Keling, til mashqini davom ettiramiz."
+            - Har bir javobingiz ustoz sifatida iliq, rag‘batlantiruvchi va professional ohangda bo‘lsin.
+
+            Foydalanuvchi yozgan xabar:
+            "${userMessage}"
+            `;
+
+        const result = await model.generateContent(fullPrompt(prompt));
+        const response = await result.response;
+        const text = response.text();
+
+        res.json({ response: text });
+    } catch (error) {
+        console.error('Gemini xatosi:', error);
+        res.status(500).json({ error: 'AI javob berolmadi. API key ni tekshiring.' });
+    }
+});
+
+// Server ishga tushirish
+app.listen(PORT, () => {
+    console.log(`Server http://localhost:${PORT} da ishlamoqda`);
+});
