@@ -6,18 +6,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken'); // Yangi: JWT import
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const axios = require('axios'); // npm install axios qiling
-
-// Proxy endpoint: /api/proxy-config
-app.get('/api/proxy-config', async (req, res) => {
-  try {
-    const response = await axios.get('https://cdn.digitalcaramel.com/configs/deeb.uz.json');
-    res.json(response.data); // JSON ni qaytaring
-  } catch (error) {
-    console.error('Proxy xatosi:', error.message);
-    res.status(404).json({ error: 'Fayl topilmadi' });
-  }
-});
+const axios = require('axios');
 
 const app = express();
 const PORT = 3000;
