@@ -87,7 +87,7 @@
                         cheklanmaydi, balki tinglab tushunish, ravon gapira olish, matnlarni to‘g‘ri o‘qish va aniq
                         yozish kabi asosiy til ko‘nikmalarini ham izchil rivojlantirishni talab qiladi.
                     </p>
-                    <button class="section-main-text-button"><i class="fa-solid fa-play"></i> Darsni boshlash</button>
+                    <button class="section-main-text-button" id="start_lesson"><i class="fa-solid fa-play"></i> Darsni boshlash</button>
                 </div>
             </div>
 
@@ -233,6 +233,13 @@
     </section>
 
     <script src="./client/index.js"></script>
+    <script>
+        const startLesson = document.getElementById("start_lesson")
+
+        startLesson.addEventListener("click", function(){
+            window.location = "./lessons/english/english.html"
+        })
+    </script>
 </body>
 
 </html>
