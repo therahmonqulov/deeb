@@ -272,3 +272,9 @@ h1 {
     padding: 10px 12px;
     font-size: 14px;
 }
+
+@media screen and (min-width: 310px) and (max-width: 770px) {
+    .main {
+        padding-top: 20px;
+    }
+}
