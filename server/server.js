@@ -1,152 +1,137 @@
-require('dotenv').config();
+require('dotenv').config(); // .env ni yuklash
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken'); // Yangi: JWT import
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const axios = require('axios');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-change-in-prod';
+const PORT = 3000;
+const JWT_SECRET = 'sizingizning_maxfiy_kalitingiz_o_zgartiring'; // Yangi: Secret kalit (xavfsiz qiling!)
 
 // Middleware
-app.use(cors({
-  origin: '*', // Productionda o‘zgartiring: 'https://deeb.uz'
-  credentials: true
-}));
-app.use(bodyParser.json());
+app.use(cors()); // Front-end dan so'rovlarga ruxsat
+app.use(bodyParser.json()); // JSON body ni parse qilish
 
 // MongoDB ulanish
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB ga muvaffaqiyatli ulandi'))
-  .catch(err => console.error('MongoDB ulanish xatosi:', err));
+  .then(() => console.log('MongoDB ga ulandi'))
+  .catch(err => console.error('MongoDB xatosi:', err));
 
-// User Schema
+// Foydalanuvchi modeli
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  selectedCourse: { type: String, default: "Hech qanday dars tanlanmagan" },
-  subscriptionPlan: { type: String, default: "Bepul" },
-  subscriptionStart: { type: Date },
-  subscriptionEnd: { type: Date }
+  password: { type: String, required: true }
 });
-
 const User = mongoose.model('User', userSchema);
 
-// === REGISTER ===
+// Ro'yxatdan o'tish
 app.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
-
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: 'Barcha maydonlar to‘ldirilishi shart' });
-    }
-
-    const existingUser = await User.findOne({ $or: [{ email }, { name }] });
+    const existingUser = await User.findOne({ $or: [{ name }, { email }] });
     if (existingUser) {
-      return res.status(400).json({ error: 'Bu email yoki username band' });
+      if (existingUser.name === name) {
+        return res.status(400).json({ error: 'name_exists', message: 'Bu foydalanuvchi nomi allaqachon mavjud' });
+      } else if (existingUser.email === email) {
+        return res.status(400).json({ error: 'email_exists', message: 'Bu email allaqachon ro\'yxatdan o\'tgan' });
+      }
     }
-
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
     const newUser = new User({ name, email, password: hashedPassword });
     await newUser.save();
 
-    const token = jwt.sign({ email: newUser.email, name: newUser.name }, JWT_SECRET, { expiresIn: '7d' });
-    res.status(201).json({ message: 'Muvaffaqiyatli ro‘yxatdan o‘tildi', token });
+    const token = jwt.sign({ name, email }, JWT_SECRET, { expiresIn: '1h' });
+    res.status(201).json({ message: 'Ro\'yxatdan o\'tdingiz', token });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server xatosi' });
+    res.status(500).json({ error: 'server_error', message: 'Server xatosi' });
   }
 });
 
-// === LOGIN ===
+// Kirish endpointi (token bilan)
 app.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ error: 'Email topilmadi' });
-
+    if (!user) {
+      return res.status(400).json({ error: 'email_not_found', message: 'Bu email ro\'yxatdan o\'tmagan' });
+    }
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ error: 'Parol noto‘g‘ri' });
+    if (!isMatch) {
+      return res.status(400).json({ error: 'invalid_password', message: 'Noto\'g\'ri parol' });
+    }
 
-    const token = jwt.sign({ email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ name: user.name, email: user.email }, JWT_SECRET, { expiresIn: '1h' });
     res.json({ message: 'Kirish muvaffaqiyatli', token });
   } catch (err) {
-    res.status(500).json({ error: 'Server xatosi' });
+    res.status(500).json({ error: 'server_error', message: 'Server xatosi' });
   }
 });
 
-// === VERIFY TOKEN (frontend uchun) ===
+// Yangi: Token ni tekshirish endpointi
 app.post('/verify', (req, res) => {
   const { token } = req.body;
-  if (!token) return res.status(401).json({ valid: false });
-
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
-    if (err) return res.status(401).json({ valid: false });
-    res.json({ valid: true, user: decoded });
-  });
-});
-
-// === PROFIL MA'LUMOTLARINI OLISH ===
-app.get('/profile', async (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Token kerak' });
-
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    const user = await User.findOne({ email: decoded.email }).select('-password');
-    if (!user) return res.status(404).json({ error: 'Foydalanuvchi topilmadi' });
-
-    res.json({
-      name: user.name,
-      email: user.email,
-      selectedCourse: user.selectedCourse,
-      subscriptionPlan: user.subscriptionPlan,
-      subscriptionStart: user.subscriptionStart ? user.subscriptionStart.toISOString().split('T')[0] : null,
-      subscriptionEnd: user.subscriptionEnd ? user.subscriptionEnd.toISOString().split('T')[0] : null
-    });
+    res.json({ valid: true, user: decoded });
   } catch (err) {
-    res.status(401).json({ error: 'Token xato yoki muddati tugagan' });
+    res.status(401).json({ valid: false, error: 'Noto\'g\'ri yoki muddati tugagan token' });
   }
 });
 
-// === GEMINI AI ===
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+// === AI INTEGRATSIYASI (Gemini) ===
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY); // .env dan API key
+const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' }); // Tez va samarali model
 
+// API endpoint: /generate (ai.js tomonidan chaqiriladi)
 app.post('/generate', async (req, res) => {
-  const { prompt, token } = req.body;
+  const { prompt } = req.body;
 
-  if (!prompt) return res.status(400).json({ error: "Prompt bo'sh" });
-  if (!token) return res.status(401).json({ error: "Token kerak" });
+  if (!prompt) {
+    return res.status(400).json({ error: 'Prompt bo\'sh emas' });
+  }
 
   try {
-    // Tokenni tekshirish (ixtiyoriy, lekin tavsiya etiladi)
-    jwt.verify(token, JWT_SECRET);
-
-    const fullPrompt = `
+    const fullPrompt = (userMessage) => `
     Siz til o‘rganish bo‘yicha yuqori malakali va do‘stona ustozsiz.
-    Javobingiz faqat o‘zbek tilida bo‘lsin, inglizcha misollar bilan.
-    Hech qachon o‘zingizni AI deb tanitmang. Faqat "Ustoz" sifatida gapiring.
-    Agar til o‘rganishdan boshqa savol bo‘lsa: "Kechirasiz, men faqat til o‘rganishda yordam bera olaman 😊" deb javob bering.
+    Sizning yagona vazifangiz — foydalanuvchiga chet tillarini (ayniqsa ingliz tilini) tushunishga, tarjima qilishga, grammatikani o‘rganishga va mashq qilishga yordam berishdir.
 
-    Foydalanuvchi savoli: "${prompt}"
+    Qoidalar:
+    1.Foydalanuvchi “Siz kimsiz?”, “Siz AI misiz?”, “ChatGPTmisiz?” desa — doim quyidagicha javob ber: “Men sizning til o‘rganish bo‘yicha Ustozingizman.”
+    2.Hech qachon o‘zingizni AI, model, ChatGPT, Gemini yoki shunga o‘xshash texnologiya sifatida tanitmang.
+    3.Faqat Til o‘rgatuvchi Ustoz bo‘lib qoling.
+    4.Javoblar har doim:
+    -qisqa,
+    -aniq,
+    -sodda,
+    foydalanuvchi darajasiga mos bo‘lsin.
+    5.Tushuntirishlar o‘zbek tilida, lekin kerak joyda inglizcha matnni ham ko‘rsating.
+    6.Grammatikani tushuntirganda soddalashtirilgan izohlar va aniq misollar foydalaning.
+    7.Agar foydalanuvchi til o‘rganishdan boshqa mavzu (kod yozish, siyosat, texnologiya, maslahat, biznes, matematika va h.k.) bo‘yicha so‘rasa, muloyim rad eting va quyidagicha javob bering:
+    “Kechirasiz 😊 Men faqat til o‘rganish bo‘yicha yordam bera olaman. Keling, til mashqini davom ettiramiz.”
+    8.Ohang: do‘stona, iliq, rag‘batlantiruvchi va professional bo‘lsin.
+
+    Foydalanuvchi yozgan xabar:
+    "${userMessage}"
     `;
 
-    const result = await model.generateContent(fullPrompt);
-    const text = result.response.text();
+    const result = await model.generateContent(fullPrompt(prompt));
+    const response = await result.response;
+    const text = response.text();
 
     res.json({ response: text });
-  } catch (err) {
-    console.error("Gemini xatosi:", err);
-    res.status(500).json({ error: "AI javob bera olmadi" });
+  } catch (error) {
+    console.error('Gemini xatosi:', error);
+    res.status(500).json({ error: 'AI javob berolmadi. API key ni tekshiring.' });
   }
 });
 
-// Serverni ishga tushirish
+// Server ishga tushirish
 app.listen(PORT, () => {
-  console.log(`Server http://localhost:${PORT} da ishga tushdi`);
+  console.log(`Server http://localhost:${PORT} da ishlamoqda`);
 });
