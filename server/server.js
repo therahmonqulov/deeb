@@ -19,15 +19,23 @@ app.use(bodyParser.json()); // JSON body ni parse qilish
 // MongoDB ulanish
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB ga ulandi'))
-  .catch(err => console.error('MongoDB xatosi:', err));
+  .catch(err => console.error('MongoDB xatosi:', err)
+);
 
 // Foydalanuvchi modeli
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true }
+  password: { type: String, required: true },
+
+  // Obuna ma'lumotlari
+  selectedCourse: { type: String, default: "Hech qanday dars tanlanmagan" },
+  subscriptionPlan: { type: String, default: "Bepul" }, // Bepul, Premium, Pro
+  subscriptionStart: { type: Date },
+  subscriptionEnd: { type: Date }
 });
 const User = mongoose.model('User', userSchema);
+
 
 // Ro'yxatdan o'tish
 app.post('/register', async (req, res) => {
@@ -128,6 +136,35 @@ app.post('/generate', async (req, res) => {
   } catch (error) {
     console.error('Gemini xatosi:', error);
     res.status(500).json({ error: 'AI javob berolmadi. API key ni tekshiring.' });
+  }
+});
+
+// === PROFIL MA'LUMOTLARINI OLISH ===
+app.get('/profile', async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Token kerak' });
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findOne({ email: decoded.email }).select('-password');
+
+    if (!user) return res.status(404).json({ error: 'Foydalanuvchi topilmadi' });
+
+    res.json({
+      name: user.name,
+      email: user.email,
+      selectedCourse: user.selectedCourse || "Hech qanday dars tanlanmagan",
+      subscriptionPlan: user.subscriptionPlan || "Bepul",
+      subscriptionStart: user.subscriptionStart ? user.subscriptionStart.toISOString().split('T')[0] : null,
+      subscriptionEnd: user.subscriptionEnd ? user.subscriptionEnd.toISOString().split('T')[0] : null
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(401).json({ error: 'Token xato yoki muddati o‘tgan' });
   }
 });
 

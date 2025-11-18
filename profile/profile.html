@@ -45,13 +45,13 @@
                     <li><i class="fa-solid fa-calendar-check"></i> <span>Darslar</span></li>
                 </a>
                 <a href="./ai.html">
-                    <li class="crl"><i class="fa-solid fa-robot"></i> <span>AI</span></li>
+                    <li><i class="fa-solid fa-robot"></i> <span>AI</span></li>
                 </a>
                 <a href="../quiz/quiz.html">
                     <li><i class="fa-solid fa-file-word"></i> <span>Test</span></li>
                 </a>
                 <a href="#">
-                    <li><i class="fa-solid fa-user"></i> <span>Profil</span></li>
+                    <li class="crl"><i class="fa-solid fa-user"></i> <span>Profil</span></li>
                 </a>
             </ul>
             <div class="menu-setting">
@@ -75,7 +75,57 @@
 
             <div class="profile">
                 <div class="profile-container">
-                        
+                    <div class="profile-card">
+
+                        <div class="profile-info">
+                            <h3><i class="fa-solid fa-circle-info"></i> Ma'lumotlar:</h3>
+                            <strong>Foydalanuvchi nomi:</strong>
+                            <span id="username">Yuklanmoqda...</span>
+                            <strong>Elektron pochta:</strong>
+                            <span id="email">Yuklanmoqda...</span>
+                            <button class="profile-btn" id="changePasswordBtn">Parolni o'zgartirish</button>
+                        </div>
+
+                        <div class="subscription-detal">
+                            <h3><i class="fa-solid fa-dollar-sign"></i> Dars:</h3>
+                            <strong>Tanlangan Dars:</strong>
+                            <span id="subscription-status">Yuklanmoqda...</span>
+                            <p id="subscription-details" style="display: none;"><strong>Dars xolati:</strong>
+                                <span id="plan"></span>
+                                <strong>Muddati boshlangan:</strong> <span id="started-at"></span>
+                                <strong>Muddati tugaydi:</strong> <span id="expires-at"></span>
+                            </p>
+                        </div>
+
+                        <div class="profile-notification">
+                            <h3><i class="fa-solid fa-envelope"></i> Xabarlar:</h3>
+                            <div class="profile-notification-text-area">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Change Password Modal -->
+            <div class="login-modal" id="changePasswordModal">
+                <div class="login-container">
+                    <span class="close-login" id="closeChangePassword">×</span>
+                    <h2 class="login-title">Parolni o'zgartirish</h2>
+                    <form class="login-form" id="changePasswordForm">
+                        <div class="form-group">
+                            <label for="newPassword">Yangi parol</label>
+                            <input type="password" id="newPassword" placeholder="Yangi parol (kamida 8 belgi)">
+                            <span class="error-message" id="newPassword-error"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmNewPassword">Parolni tasdiqlang</label>
+                            <input type="password" id="confirmNewPassword" placeholder="Parolni qayta kiriting">
+                            <span class="error-message" id="confirmNewPassword-error"></span>
+                        </div>
+                        <span class="error-message" id="changePassword-error"></span>
+                        <button type="submit" class="login-btn">Parolni o'zgartirish</button>
+                    </form>
                 </div>
             </div>
 
