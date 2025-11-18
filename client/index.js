@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.location = "/profile/profile.html"
     })
 
+    
+
     try {
         const response = await fetch('https://deeb-backend-aw81.onrender.com/verify', {
             method: 'POST',

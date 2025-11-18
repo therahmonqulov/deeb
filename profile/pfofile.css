@@ -1,3 +1,7 @@
+.main {
+    padding-top: 20px;
+}
+
 .login-modal {
     display: none;
     z-index: 1000;
