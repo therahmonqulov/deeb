@@ -1,5 +1,27 @@
 .login-modal {
     display: none;
+    z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.850);
+    justify-content: center;
+    align-items: center;
+}
+
+.close-login {
+    cursor: pointer;
+    font-weight: 600;
+    color: #fff;
+    font-size: 20px;
+    position: absolute;
+    right: 30px;
+}
+
+.login-title {
+    color: #ccc;
 }
 
 .login-form .form-group {
@@ -91,16 +113,17 @@
     }
 }
 
-
 .login-container {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    background-color: #1a1a1a;
+    padding: 30px;
+    width: 400px;
 }
 
 .profile-container {
-    max-width: 1200px;
     margin: 0 auto;
     font-family: 'Montserrat', sans-serif;
     padding: 20px;
@@ -128,7 +151,7 @@
     background: yellowgreen;
 }
 
-.profile-info h3, 
+.profile-info h3,
 .subscription-detal h3 {
     color: yellowgreen;
     font-size: 1.5rem;
@@ -261,7 +284,7 @@
     .profile-card {
         grid-template-columns: 1fr;
     }
-    
+
     .profile-container {
         padding: 10px;
     }
@@ -288,5 +311,7 @@
 }
 
 @keyframes spin {
-    to { transform: translate(-50%, -50%) rotate(360deg); }
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
 }
