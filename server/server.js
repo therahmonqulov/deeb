@@ -29,6 +29,70 @@ const userSchema = new mongoose.Schema({
 });
 const User = mongoose.model('User', userSchema);
 
+// ==== YANGI: Foydalanuvchi profil ma'lumotlarini olish uchun middleware ====
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+  if (!token) return res.status(401).json({ error: 'Token topilmadi' });
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ error: 'Noto‘g‘ri token' });
+    req.user = user;
+    next();
+  });
+};
+
+// ==== Obuna (subscription) modeli qo‘shish ====
+const subscriptionSchema = new mongoose.Schema({
+  userEmail: { type: String, required: true },
+  language: { type: String, required: true },       // masalan: "Ingliz tili", "Rus tili"
+  plan: { type: String, default: "30 kunlik" },
+  startedAt: { type: Date, default: Date.now },
+  expiresAt: { type: Date, required: true }
+});
+
+const Subscription = mongoose.model('Subscription', subscriptionSchema);
+
+// ==== Profil ma'lumotlarini olish ====
+app.get('/api/profile', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.user.email }).select('-password');
+    const subscription = await Subscription.findOne({ userEmail: req.user.email });
+
+    res.json({
+      username: user.name,
+      email: user.email,
+      subscription: subscription ? {
+        language: subscription.language,
+        plan: subscription.plan,
+        startedAt: subscription.startedAt.toISOString().split('T')[0],
+        expiresAt: subscription.expiresAt.toISOString().split('T')[0]
+      } : null
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server xatosi' });
+  }
+});
+
+// ==== Parolni o‘zgartirish ====
+app.post('/api/change-password', authenticateToken, async (req, res) => {
+  try {
+    const { newPassword } = req.body;
+    if (!newPassword || newPassword.length < 8) {
+      return res.status(400).json({ error: 'Parol kamida 8 belgi bo‘lishi kerak' });
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await User.updateOne({ email: req.user.email }, { password: hashed });
+
+    res.json({ message: 'Parol muvaffaqiyatli o‘zgartirildi' });
+  } catch (err) {
+    res.status(500).json({ error: 'Server xatosi' });
+  }
+});
+
 // Ro'yxatdan o'tish
 app.post('/register', async (req, res) => {
   try {
