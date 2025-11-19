@@ -94,25 +94,45 @@ app.post('/api/change-password', authenticateToken, async (req, res) => {
 });
 
 // Ro'yxatdan o'tish
+// Ro'yxatdan o'tish (YANGILANGAN)
 app.post('/register', async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, language = "Ingliz tili" } = req.body; // language frontenddan kelishi mumkin
+
+    // Foydalanuvchi mavjudligini tekshirish...
     const existingUser = await User.findOne({ $or: [{ name }, { email }] });
     if (existingUser) {
-      if (existingUser.name === name) {
-        return res.status(400).json({ error: 'name_exists', message: 'Bu foydalanuvchi nomi allaqachon mavjud' });
-      } else if (existingUser.email === email) {
-        return res.status(400).json({ error: 'email_exists', message: 'Bu email allaqachon ro\'yxatdan o\'tgan' });
-      }
+      if (existingUser.name === name) return res.status(400).json({ error: 'name_exists', message: 'Bu foydalanuvchi nomi allaqachon mavjud' });
+      if (existingUser.email === email) return res.status(400).json({ error: 'email_exists', message: 'Bu email allaqachon ro\'yxatdan o\'tgan' });
     }
+
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // 1. Foydalanuvchini yaratish
     const newUser = new User({ name, email, password: hashedPassword });
     await newUser.save();
 
-    const token = jwt.sign({ name, email }, JWT_SECRET, { expiresIn: '1h' });
-    res.status(201).json({ message: 'Ro\'yxatdan o\'tdingiz', token });
+    // 2. Avtomatik ravishda obuna qo'shish (masalan, 30 kunlik bepul)
+    const newSubscription = new Subscription({
+      userEmail: email,
+      language: language,                    // agar frontenddan kelmagan bo'lsa default "Ingliz tili"
+      plan: "30 kunlik bepul",
+      startedAt: new Date(),
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // +30 kun
+    });
+    await newSubscription.save();
+
+    // Token yaratish
+    const token = jwt.sign({ name, email }, JWT_SECRET, { expiresIn: '30d' }); // uzoqroq qildim
+
+    res.status(201).json({ 
+      message: 'Muvaffaqiyatli roʻyxatdan oʻtdingiz va obuna faollashtirildi!', 
+      token 
+    });
+
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'server_error', message: 'Server xatosi' });
   }
 });
